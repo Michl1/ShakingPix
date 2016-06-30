@@ -18,7 +18,7 @@ unit uDefinitions;
 
 interface
 
-uses Forms, math;
+uses Forms, BGRABitmapTypes, math;
 
 const
   MaxLife = 1000;                                           // maximum age of a image
@@ -31,6 +31,9 @@ const
   {$ELSE}
   BasePath = '/';
   {$ENDIF}
+  PictSpace = 0.1;                                          // space from one image to the next
+  ZNext: Double = 0;                                        // intern
+  Lying = 3;                                              // intern
 
 type
   TAppState = (asCreating, asRunning, asDestroying);
@@ -49,7 +52,18 @@ var
   FastGrowArray:          array[0..HiMaxLife] of Double;
   FastGrowAndShrinkArray: array[0..HiMaxLife] of Double;
 
+function Normal2(w: QWord): QWord;
+
 implementation
+
+function Normal2(w: QWord): QWord;
+var
+  b: Byte;
+begin
+  for b := 63 downto 1 do
+    if w shr b > 0 then Exit((w shr b) shl b);
+  Result := w;
+end;
 
 procedure InitArrays;
 var
